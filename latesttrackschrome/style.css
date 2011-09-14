@@ -1,0 +1,106 @@
+/* Global Styles */
+*{ font-family:'Lucida Grande', Helvetica, Arial, sans-serif; }
+a{ color:#06c; text-decoration:none; }
+a:hover{ color:#f50; }
+
+/* Styles for popup.html */
+body{ width:500px; background:#fff url('images/background.png') no-repeat; }
+#track{ height:122px; }
+
+	/* Popup menu styles */
+	#menu{ width:20px; position:absolute; top:0; right:0; }
+	#menu a{ display:block; height:20px; width:20px; }
+	.incList{ background:url('images/icons.png') no-repeat; background-position:-80px -316px; }
+	.incList:hover, .incSelect{ background-position:-80px -336px; }
+	.favList{ background:url('images/icons.png') no-repeat; background-position:-79px -197px; }
+	.favList:hover, .favSelect{ background-position:-79px -217px; }
+
+	/* Player actions styles */
+	#actions{ width:498px; border:1px solid #ccc; border-bottom:0; background:#eee; height:20px; overflow:hidden; border-top-left-radius:4px; border-top-right-radius:4px; }
+	#actions a{ color:#333; font-size:10px; line-height:21px; border-right:1px solid #ccc; padding:5px 8px 5px 20px;}
+	#actions a:hover{ color:#06c; }
+	.download, .purchase, .addfav, .remfav{ background:url('images/icons.png') no-repeat; background-position:-75px -236px; }
+	.download:hover{ background-position:-75px -256px; }
+	.purchase{ background-position:-75px -435px; }
+	.purchase:hover{ background-position:-75px -455px; }
+	.addfav{ background-position:-75px -196px; }
+	.addfav:hover{ background-position:-75px -216px; }
+	.remfav{ background-position:-75px -836px; }
+	#removeFavorite, #showFavorite{ display:none; }
+	#actions .genre{ float:right; margin-top:-1px; }
+	#actions .genre a{ color:#fff; border:none; padding:0; margin-right:4px; background-color:#06c; border-radius:7px; line-height:12px; padding:1px 6px; border-right:none; }
+	#actions .genre a:hover{ background-color:#f50; }
+	#comments{ display:block; position:absolute; top:41px; right:3px; width:19px; height:14px; z-index:1500;}
+	.hide, .show{ background:url('images/icons.png') no-repeat; background-position:-76px -1221px; }
+	.hide:hover{ background-position:-76px -1241px; }
+	.show{ background-position:-76px -1180px; }
+	.show:hover{ background-position:-76px -1200px; }
+	
+	/* Player styles */
+	#tInfo{ width:480px; height:47px; margin-bottom:5px; overflow:hidden; }
+	.badge{ display:block; width:47px; height:47px; float:left; margin:0 7px 0 0; }
+	h3{ padding:0; margin:0; font-size:16px; line-height:23px; }
+	#player{ width:500px; height:61px; position:relative; }
+	#waveform{ border-top:1px solid #ccc; border-left:1px solid #ccc; border-right:1px solid #ccc; position:absolute; top:0; left:72px; width:426px; height:59px; background:-webkit-linear-gradient(top, rgba(102,102,102,1) 0%,rgba(175,175,175,1) 48%,rgba(175,175,175,1) 52%,rgba(102,102,102,1) 100%); }
+	#buffering{ position:absolute; top:0; left:0; width:0; height:59px; background:-webkit-linear-gradient(top, rgba(51,51,51,1) 0%,rgba(125,126,125,1) 48%,rgba(125,126,125,1) 52%,rgba(51,51,51,1) 100%); }
+	.wavebg{ position:absolute; top:0; left:0; width:426px; height:59px; }
+	#progress{ top:0; left:0; position:absolute; width:1px; height:59px; background:url('images/tick.png') no-repeat top right; overflow:hidden; }
+	.playPauseC{ width:49px; height:49px; background:#efefef; border-left:1px solid #ccc; border-top:1px solid #ccc; padding:1px 10px 9px 12px; }
+	#playPause{ display:block; width:49px; height:49px; }
+	a.play, a.play:hover{ background:url('images/buttons.png'); }
+	a.play:hover{ background-position: 50px 0; }
+	a.pause, a.pause:hover{ background:url('images/buttons.png'); background-position: 0 51px; }
+	a.pause:hover{ background-position: 50px 51px; }
+	#time{ position:absolute; top:48px; left:2px; width:70px; text-align:center; color:#333; font-size:9px; }
+	
+	/* Comments styles */
+	#comment{ margin:11px 0; display:none; height:170px; overflow-x:hidden; overflow-y:auto; border:1px solid #ccc; font-size:11px; background:#f0f6fb; }
+	.acomment{ padding:10px; overflow:hidden; border-top:1px solid #fff; }
+	.avatar{ float:left; padding-right:10px; }
+	.commentedat{ font-weight:bold; }
+	.commented{ color:#666; }
+	.commentbody{ padding:10px 0 0 67px; }
+	.addcomment{ padding:10px; overflow:hidden; }
+	.addcomment h3{ font-size:14px; color:#333; font-weight:normal; }
+	#newcomment{ border-bottom-right-radius:7px; border-top-left-radius:7px; border-color:#ccc; width:455px; height:40px; }
+	#postcomment{ float:right; margin-top:8px; font-size:11px; color:#333; padding:0 8px; font-weight:normal; text-align:center; text-shadow:0 1px 0 rgba(255, 255, 255, 0.8); height:18px; line-height:18px; border:1px #ccc solid; border-radius:1em; background-color:#e5e5e5; background-image:-webkit-linear-gradient(top, white, #e5e5e5); cursor:pointer; }
+	#postcomment:active{ background-image:-webkit-linear-gradient(top, #e5e5e5, white); }
+	
+	/* Playlist styles */
+	#tracks{ padding:0; list-style-type:none; display:block; height:170px; overflow-x:hidden; overflow-y:auto; border:1px solid #ccc; font-size:11px; }
+	#tracks li{ margin:0; padding:2px 7px; white-space:nowrap; color:#333; }
+	#tracks li.odd{ background-color:#f8f8f8; }
+	#tracks li.even{ background-color:#eee; }
+	#tracks li.active, #tracks li:hover{ background-color:#f50; color:#fff; }
+	#tracks li.active a, #tracks li:hover a{ color:#fff; }
+	#moreTracks { white-space:normal; text-align:center; }
+	#moreTracks:hover { cursor:pointer; }
+	
+	/* Notification styles */
+	#setup{ padding-bottom:10px; }
+	#setup h1{ text-align:center; color:#06c; }
+	#setup p{ padding:10px 5px 0 5px; margin:0; font-size:13px; line-height:16px; }
+	#notification { background-color:#e7f0f9; text-align:center; font-size:13px; }
+	
+	/* Hidden div for jQuery access */
+	#access { display:none; }
+
+/* Styles for options.html */
+body.options{ width:auto; margin:0; padding:0; background:#fff; }
+#header{ background: -webkit-gradient(linear, 0 0, 0 100%, from(#F60), to(#F30)) repeat-x, #F30; height: 28px; padding:6px 0 10px 0; }
+#main{ -webkit-box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.6); font-size:14px; line-height:17px; }
+#bottomCancel{ background:white; height:4px; }
+.center{ width:600px; margin:0 auto; }
+.left{ float:left; width:297px; padding-right:3px; text-align:right; }
+.right{ float:right; width:297px; padding-left:3px; }
+.option{ overflow:hidden; padding-top:10px; }
+.option:first-child{ padding-top:20px; }
+.save{ text-align:center; padding-top:10px; }
+input{ font-size:13px; line-height:17px; height:17px; font-weight:bold; padding:0; }
+#token{ width:200px; }
+#limit, #interval, #comopt{ width:35px; }
+#errors, #saved{ color:#ad0000; padding-top:10px; text-align:center; }
+#saved{ color:#00ad08; }
+h1{ display:inline-block; width:520px; margin:0 0 0 10px; padding:0; font-size:17px; line-height:28px; color:#fff; }
+.cloud{ float:left; }
+#credits{ margin-top:30px; font-size:11px; text-align:center; }

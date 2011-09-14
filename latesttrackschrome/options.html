@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		<title>SoundCloud Latest Tracks for Google Chrome&trade; Options</title>
+		<link href="style.css" media="screen" rel="stylesheet" type="text/css" /> 
+		<script type="text/javascript" src="scripts/jquery.min.js"></script>
+		<script type="text/javascript" src="scripts/options.js"></script>
+	</head>
+	<body class="options">
+		<div id="header">
+			<div class="center">
+				<img src="images/cloud.png" alt="SoundCloud" class="cloud"/>
+				<h1>SoundCloud Latest Tracks for Google Chrome&trade; Options</h1>
+			</div>
+		</div>
+		<div id="main">
+			<div class="center">
+				<div class="option">
+					<div class="left">
+						Application token (<a href="http://ericlorentz.com/soundcloud-latest-tracks-for-google-chrome/" target="_blank">get token here</a>):
+					</div>
+					<div class="right">
+						<input type="text" id="token"/>
+					</div>
+				</div>
+				<div class="option">
+					<div class="left">
+						Number of tracks to check for:
+					</div>
+					<div class="right">
+						<input type="text" id="limit" value="20"/> (50 max)
+					</div>
+				</div>
+				<div class="option">
+					<div class="left">
+						Check for new tracks every:
+					</div>
+					<div class="right">
+						<input type="text" id="interval" value="3"/> minutes
+					</div>
+				</div>
+				<div class="option">
+					<div class="left">
+						Autoplay next track:
+					</div>
+					<div class="right">
+						<input type="checkbox" id="autoplay" value="1" checked />
+					</div>
+				</div>
+				<div class="option">
+					<div class="left">
+						Limit comments to:
+					</div>
+					<div class="right">
+						<input type="text" id="comopt" value="20"/> per track
+					</div>
+				</div>
+				<div class="save">
+					<button onclick="saveOptions()">Save Options</button>
+				</div>
+				<div id="message"></div>
+				<div id="credits">
+					SoundCloud Latest Tracks for Google Chrome&trade; created by <a href="http://www.ericlorentz.com" target="_blank">Eric Lorentz</a>.
+					<br/>v2.60
+				</div>
+			</div>
+		</div>
+		<div id="bottomCancel"></div>
+	</body>
+</html>
