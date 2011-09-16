@@ -3,6 +3,9 @@ SoundCloud Latest Tracks for Google Chrome™ is an unofficial extension that gi
 Tested with:
 Google Chrome (13.0.782.220) on Mac OSX and Windows 7
 
+Fixes in version 2.61:
+- Fixed a bug that caused the wrong track information to be displayed if new tracks were fetched twice before opening the extension's popup window
+
 Changes in version 2.60:
 - View and listen to your favorite tracks by clicking on the favorite button at the top right of the extension
 
