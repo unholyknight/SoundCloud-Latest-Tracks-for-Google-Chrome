@@ -16,23 +16,23 @@
 /************************************************************/
 
 // Global variables
-var tNew = 0, fNew = 0, fIn = 0; autoplay = 0, comments = 0, view = "inc", viewlength = 0, extrafav = 0;
+var tNew = 0, tNewCount = 0, fNew = 0, fIn = 0; autoplay = 0, comments = 0, view = "inc", viewlength = 0, extrafav = 0;
 var trackData = [[], [], [], []];
 var favData = [[], [], [], []];
-var token, limit, interval, intTimer, buffered, buffTimer, current, linkcount, inc;
+var token, limit, intTimer, buffered, buffTimer, current = 0, linkcount, inc;
 
 // Connect to SoundCloud, setup for latest track fetching
 function initialize(fetch, inToken, inLimit, inInterval) {
 	var i = 0;
 	if (inToken != undefined) {
+		clearInterval(intTimer);
 		token = inToken;
 		limit = inLimit;
-		interval = inInterval;
 		SC.initialize({
 			client_id: "2b161e5544f1f7f4cab5ff3c76c6c7b8",
 			access_token: token
 		});
-		intTimer = setInterval(fetchTracks, 60 * interval * 1000);
+		intTimer = setInterval(fetchTracks, 60 * inInterval * 1000);
 		if (fetch === 1) {
 			for (i = 0; i < trackData.length; i++) {
 				trackData[i].length = 0;
@@ -80,11 +80,13 @@ function fetchTracks(notify, more) {
 				}
 			});
 			if (tNew > 0) {
-				chrome.browserAction.setBadgeText({text: tNew + ""});
+				tNewCount = tNewCount + tNew;
+				chrome.browserAction.setBadgeText({text: tNewCount + ""});
 				if (view === "inc") {
 					viewlength = trackData[0].length;
 					current = inBounds((parseInt(current) + parseInt(tNew)), viewlength);
 				}
+				tNew = 0;
 				chrome.extension.sendRequest({requestlist: "new"});
 			}
 			if (notify === 0) {
@@ -126,6 +128,7 @@ function fetchTracks(notify, more) {
 			if (view === "fav") {
 				current = inBounds((parseInt(current, 10) + parseInt(fNew, 10)), viewlength);
 			}
+			fNew = 0;
 			chrome.extension.sendRequest({requestlist: "new"});
 		}
 		if (more === 1) { chrome.extension.sendRequest({requestlist: "readymorefavs"}); }
@@ -208,9 +211,9 @@ function endPlayback(track) {
 		track = parseInt(current) + 1;
 	}
 	if (localStorage.autoplay === "1" && track < viewlength) {
-		current = inBounds(parseInt(track), viewlength);
-		chrome.extension.sendRequest({requestlist: "next," + track});
-		trackPlayback(track, view, 1);
+		current = inBounds(parseInt(track, 10), viewlength);
+		chrome.extension.sendRequest({requestlist: "next," + current});
+		trackPlayback(current, view, 1);
 	}
 }
 
@@ -230,22 +233,20 @@ chrome.extension.onRequest.addListener(
 			inc = request.requestlist.split(',');
 			if (inc[1] === "startup") {
 				if (view === "inc") {
-					tNew = 0;
+					tNewCount = 0;
 					chrome.browserAction.setBadgeText({text:""});
 					sendResponse({sendlist: trackData[0]});
 				}
 				else {
-					fNew = 0;
 					sendResponse({sendlist: favData[0]});
 				}
 			}
 			else if (inc[1] === "inc") {
-				tNew = 0;
+				tNewCount = 0;
 				chrome.browserAction.setBadgeText({text:""});
 				sendResponse({sendlist: trackData[0]});
 			}
 			else {
-				fNew = 0;
 				sendResponse({sendlist: favData[0]});
 			}
 		}
