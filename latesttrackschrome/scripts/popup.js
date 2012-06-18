@@ -13,10 +13,10 @@
 /************************************************************/
 
 // Global variables
-var playing, child, view = "inc", initialized = false, looking = "inc";
+var playing, child, view = "inc", initialized = false, looking = "inc", i, lastPosf = 0, lastPosi = 0, lastPosm = 0;
 
 // Initialize data for display taking into account the listing request and action
-function initialize(listing, action) {
+function initialize(listing, action, extra) {
 	var linkage;
 	// If our listing is the same as our current view set action to act
 	if (listing === view) { action = "act"; }
@@ -28,8 +28,14 @@ function initialize(listing, action) {
 			view = response.sendlist;
 			looking = response.sendlist;
 			linkage = response.sendlist;
-			if (view === "inc") { $(".incList").addClass('incSelect'); }
-			else { $(".favList").addClass('favSelect'); }
+			chrome.extension.sendRequest({requestlist: "loopStatus"}, function(response) { 
+				$("#loop").text("Loop " + response.sendlist.substr(0,1).toUpperCase()+response.sendlist.substr(1,response.sendlist.length));
+				if(response.sendlist !== "off"){ $("#loop").addClass("on"); }
+				loopButton(); 
+			});
+			if (view === "inc") { $("#inc").addClass('selected'); }
+			else if(view === "fav") { $("#fav").addClass('selected'); }
+			else { chrome.extension.sendRequest({requestlist: "getproper"}, function(response) { $("<a href=\"#\" id=\"" + view + "\" class=\"selected\">" + response.sendlist + "</a>").appendTo('#tabs'); });	}
 		}
 		else { linkage = listing; }
 		// Request current playing track from background
@@ -37,7 +43,7 @@ function initialize(listing, action) {
 			playing = response.sendlist;
 			// Request track list array and display them in the track list within the extension
 			chrome.extension.sendRequest({requestlist: "give," + listing}, function(response) {
-				if (response.sendlist.length > 0) {
+				if (response.sendlist && response.sendlist.length > 0) {
 					for (i=0; i<response.sendlist.length; i++) {
 						var eo;
 						if (i%2 === 0) {
@@ -48,29 +54,50 @@ function initialize(listing, action) {
 						}
 						$("<li class=\"" + eo + "\">" + (i+1) + ". " + response.sendlist[i] + "</li>").appendTo("#tracks");
 					}
-					// Display more tracks link on favorite tracks list
-					if (linkage === "fav") {
-						if (response.sendlist.length%2 === 0) {
-							eo = "even";
-						}
-						else {
-							eo = "odd";
-						}
-						$("<li id=\"moreTracks\" class=\"" + eo + "\"><a href=\"#\">Load More Favorite Tracks</a></li>").appendTo("#tracks");
-						$("#moreTracks").click(function() { loadMore(); });
+					// Display more tracks link on bottom of list
+					if (response.sendlist.length%2 === 0) {
+						eo = "even";
 					}
+					else {
+						eo = "odd";
+					}
+					$("<li id=\"moreTracks\" class=\"" + eo + "\"><a href=\"#\">Load More Tracks</a></li>").appendTo("#tracks");
+					$("#moreTracks").click(function() { loadMore(); });
 					actions(playing, linkage, action);
+					if(linkage === "fav"){
+						if(extra === "add"){
+							$("#tracks").scrollTop(lastPosf*17);
+						}
+						lastPosf = i;
+					}
+					else if(linkage === "inc"){
+						if(extra === "add"){
+							$("#tracks").scrollTop(lastPosi*17);
+						}
+						lastPosi = i;
+					}
+					else{
+						if(extra === "add"){
+							$("#tracks").scrollTop(lastPosm*17);
+						}
+						lastPosm = i;
+					}
+				}
+				else if(extra === "add"){
+					$("<li class=\"loading\">Loading artist tracks...</li>").appendTo("#tracks");
 				}
 				// If no tracks are available display setup and possible connectivity issue message
 				else {
 					$("#tracklist").hide();
-					$("#menu").hide();
+					$("#tabs").hide();
+					$("#loop").hide();
 					$("<div id=\"setup\"><h1>No SoundCloud Data Available</h1><p>If you haven't set up the SoundCloud Latest Tracks for Chrome extension then <a href=\"options.html\" target=\"_new\">do that now</a>.</p><p>If you've already completed the setup then double check and make sure your application token is correct. If your token is correct then there is a problem communicating with SoundCloud's server right now. Try opening this extension again later.</p></div>").appendTo("#track");
 					chrome.extension.sendRequest({requestlist: "reset"});
 				}
 			});
 		});
 	});
+	linkTabs();
 }
 
 // Set child reference and begin track and controller generation
@@ -119,14 +146,26 @@ function generateTrack(track, linkage, click, override) {
 	if (playerData[5] !== "") {
 		tActions = tActions + "<div class=\"genre\"><a href=\"http://soundcloud.com/tags/" + playerData[5] + "\" target=\"_new\">" + playerData[5] + "</a></div>";
 	}
-	$("<div id=\"tInfo\"><img src=\"" + badgeURL + "\" alt=\"\" class=\"badge\"/><h3><a href=\"" + playerData[1] + "\" target=\"_new\">" + $(track).text() + "</a></h3></div>").appendTo("#track");
+	$("<div id=\"tInfo\"><img src=\"" + badgeURL + "\" alt=\"\" class=\"badge\"/><h3 id=\"title\"><a href=\"" + playerData[1] + "\" target=\"_new\">" + $(track).text().substr(0, $(track).text().length - 4 - playerData[8].length) + "</a> by <a href=\"" + playerData[7] + "\" id=\"artist\">" + playerData[8] + "</a></h3></div>").appendTo("#track");
+	// Center single line of title text vertically
+	if($("#title").height() <= 23){ $("#title").css("margin-top","12px"); }
 	$("<div id=\"actions\">" + tActions + "</div><div id=\"player\"><div class=\"playPauseC\"><a href=\"#\" id=\"playPause\" class=\"play\"></a></div><div id=\"time\">0.00 / 0.00</div><div id=\"waveform\"><div id=\"buffering\"></div><img src=\"" + playerData[0] + "\" unselectable=\"on\" class=\"wavebg\"/><div id=\"progress\"><img src=\"images/progress.png\" unselectable=\"on\"/></div></div><a href=\"#\" id=\"comments\" class=\"hide\"></a></div>").appendTo("#track");
 	if (!override) {
 		$("ol li:nth-child(" + child + ")").addClass("active");	
 	}
-	if (click) {
-		chrome.extension.sendRequest({requestlist: "changetracks," + linkage + "," + (child-1)});
-	}
+	if (click) { chrome.extension.sendRequest({requestlist: "changetracks," + linkage + "," + (child-1)}); }
+	// Link artist to playlist generator
+	$("#artist").click(function(e){
+		e.preventDefault();
+		commentReset();
+		$("#tabs > a").removeClass("selected");
+		if($("#tabs a:nth-child(3)")){ $("#tabs a:nth-child(3)").remove(); }
+		$("<a href=\"#\" id=\"" + $(this).attr("href") + "\" class=\"selected\">" + $(this).text() + "</a>").appendTo('#tabs');
+		initialize($(this).attr("href"), "look", "add");
+		looking = $(this).attr("href");
+		linkTabs();
+		chrome.extension.sendRequest({requestlist: "proper," + $(this).text()});
+	});
 	generateController(playerData[6]);
 	chrome.extension.sendRequest({requestlist: "forceshift"});
 }
@@ -206,27 +245,51 @@ function fetchComments() {
 
 // Load more favorites into the playlist
 function loadMore() {
-	chrome.extension.sendRequest({requestlist: "loadmorefavs"});
+	chrome.extension.sendRequest({requestlist: "loadmore" + looking});
 }
 
 // Run popup intialization on popup open
 $(function(){ 
-	initialize("startup", "act"); 
-	$(".incList").click(function() {
-		commentReset();
-		$(".incList").addClass('incSelect');
-		$(".favList").removeClass('favSelect');
-		initialize("inc", "look");
-		looking = "inc";
-	$});
-	$(".favList").click(function() {
-		commentReset();
-		$(".favList").addClass('favSelect');
-		$(".incList").removeClass('incSelect');
-		initialize("fav", "look");
-		looking = "fav";
-	});
+	initialize("startup", "act");
 });
+
+// Add loop buton handling
+function loopButton() {
+	$("#loop").click(function(e){
+		e.preventDefault();
+		if($(this).text() === "Loop Off"){
+			$(this).text("Loop All");
+			$(this).addClass("on");
+			chrome.extension.sendRequest({requestlist: "loopAll"});
+		}
+		else if($(this).text() === "Loop All"){
+			$(this).text("Loop One");
+			chrome.extension.sendRequest({requestlist: "loopOne"});
+		}
+		else{
+			$(this).text("Loop Off");
+			$(this).removeClass();
+			chrome.extension.sendRequest({requestlist: "loopNone"});
+		}
+	});
+}
+
+// Handle tab linking
+function linkTabs() {
+	$("#tabs > a").click(function(e){
+		e.preventDefault();
+		if(!$(this).hasClass("selected")){
+			commentReset();
+			$("#tabs > a").removeClass("selected");
+			$(this).addClass("selected");
+			initialize(this.id, "look");
+			looking = this.id;
+			lastPosi = 0;
+			lastPosf = 0;
+			lastPosm = 0;
+		}
+	});
+}
 
 // Reset comment button CSS
 function commentReset() {
@@ -267,9 +330,17 @@ chrome.extension.onRequest.addListener(
 				actions(inc[1], view, "next");
 				sendResponse({});
 			}
-			// If requested extra favorites are ready
-			else if (request.requestlist === "readymorefavs") {
-				initialize("fav", "look");
+			// If requested favorite tracks are ready
+			else if (request.requestlist.substr(0,9) === "readymore") {
+				if (request.requestlist.substr(9) === "fav") {
+					initialize("fav", "look", "add");
+				}
+				else if (request.requestlist.substr(9) === "inc") {
+					initialize("inc", "look", "add");
+				}
+				else {
+					initialize($("#tabs a:nth-child(3)").attr("id"), "look", "add");
+				}
 			}
 			// Catch unrecognized requests
 			else {

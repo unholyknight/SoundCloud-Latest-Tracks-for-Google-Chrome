@@ -8,12 +8,12 @@ body{ width:500px; background:#fff url('images/background.png') no-repeat; }
 #track{ height:122px; }
 
 	/* Popup menu styles */
-	#menu{ width:20px; position:absolute; top:0; right:0; }
-	#menu a{ display:block; height:20px; width:20px; }
-	.incList{ background:url('images/icons.png') no-repeat; background-position:-80px -316px; }
-	.incList:hover, .incSelect{ background-position:-80px -336px; }
-	.favList{ background:url('images/icons.png') no-repeat; background-position:-79px -197px; }
-	.favList:hover, .favSelect{ background-position:-79px -217px; }
+	#tabs, #loop{ border:1px solid #ccc; border-top:0; background:#eee; height:20px; overflow:hidden; border-bottom-left-radius:4px; border-bottom-right-radius:4px; float:left; margin-top:-11px; max-width:498px; }
+	#tabs a, #loop{ color:#333; font-size:10px; line-height:21px; border-right:1px solid #ccc; padding:0px 8px; float:left; display:block; background:#fff;}
+	#tabs a:last-child{ border-right:none; }
+	#tabs a:hover{ color:#06c; }
+	#tabs a.selected, #loop.on{ color:#06c; background:#eee; }
+	#loop{ display:block; float:right; width:60px; text-align:center; }
 
 	/* Player actions styles */
 	#actions{ width:498px; border:1px solid #ccc; border-bottom:0; background:#eee; height:20px; overflow:hidden; border-top-left-radius:4px; border-top-right-radius:4px; }
@@ -39,7 +39,7 @@ body{ width:500px; background:#fff url('images/background.png') no-repeat; }
 	/* Player styles */
 	#tInfo{ width:480px; height:47px; margin-bottom:5px; overflow:hidden; }
 	.badge{ display:block; width:47px; height:47px; float:left; margin:0 7px 0 0; }
-	h3{ padding:0; margin:0; font-size:16px; line-height:23px; }
+	h3{ padding:0; margin:0; font-size:16px; line-height:23px; color:#8FADCC; }
 	#player{ width:500px; height:61px; position:relative; }
 	#waveform{ border-top:1px solid #ccc; border-left:1px solid #ccc; border-right:1px solid #ccc; position:absolute; top:0; left:72px; width:426px; height:59px; background:-webkit-linear-gradient(top, rgba(102,102,102,1) 0%,rgba(175,175,175,1) 48%,rgba(175,175,175,1) 52%,rgba(102,102,102,1) 100%); }
 	#buffering{ position:absolute; top:0; left:0; width:0; height:59px; background:-webkit-linear-gradient(top, rgba(51,51,51,1) 0%,rgba(125,126,125,1) 48%,rgba(125,126,125,1) 52%,rgba(51,51,51,1) 100%); }
@@ -68,13 +68,14 @@ body{ width:500px; background:#fff url('images/background.png') no-repeat; }
 	
 	/* Playlist styles */
 	#tracks{ padding:0; list-style-type:none; display:block; height:170px; overflow-x:hidden; overflow-y:auto; border:1px solid #ccc; font-size:11px; }
-	#tracks li{ margin:0; padding:2px 7px; white-space:nowrap; color:#333; }
+	#tracks li{ margin:0; padding:0 7px; white-space:nowrap; color:#333; height:17px; line-height:17px; overflow:hidden; }
 	#tracks li.odd{ background-color:#f8f8f8; }
 	#tracks li.even{ background-color:#eee; }
 	#tracks li.active, #tracks li:hover{ background-color:#f50; color:#fff; }
 	#tracks li.active a, #tracks li:hover a{ color:#fff; }
 	#moreTracks { white-space:normal; text-align:center; }
 	#moreTracks:hover { cursor:pointer; }
+	#tracks li.loading, #tracks li.loading:hover{ white-space:normal; text-align:center; height:170px; line-height:170px; background-color:#f8f8f8; color:#333; }
 	
 	/* Notification styles */
 	#setup{ padding-bottom:10px; }

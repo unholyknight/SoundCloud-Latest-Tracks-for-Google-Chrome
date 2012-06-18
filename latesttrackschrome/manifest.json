@@ -1,6 +1,6 @@
 {
 	"name": "SoundCloud Latest Tracks for Google Chrome™",
-	"version": "2.61",
+	"version": "2.75",
 	"description": "Listen to your latest incoming tracks and get notified of new track uploads right from your browser!",
 	"background_page": "background.html",
 	"options_page": "options.html",

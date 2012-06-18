@@ -1,13 +1,16 @@
 SoundCloud Latest Tracks for Google Chrome™ is an unofficial extension that gives you quick access to your latest incoming tracks from SoundCloud and notifies you of new track uploads from artists you follow. Stop checking SoundCloud for newly uploaded tracks. Let them come straight to you!
 
 Tested with:
-Google Chrome (13.0.782.220) on Mac OSX and Windows 7
+Google Chrome (18.0.1025.168) on Mac OSX and Windows 7
 
-Fixes in version 2.61:
-- Fixed a bug that caused the wrong track information to be displayed if new tracks were fetched twice before opening the extension's popup window
+Fixes in version 2.75:
+- Fixed a bug with favorite track comments that caused you to leave a comment on a track in your incoming playlist instead of the active track.
 
-Changes in version 2.60:
-- View and listen to your favorite tracks by clicking on the favorite button at the top right of the extension
+Changes in version 2.75:
+- Option to loop one track or all tracks in a playlist
+- Artist playlists (accessed by clicking the artist's name on the playing track)
+- Ability to load more tracks into all playlists
+- Playlists and loop options represented by tabs at the bottom of the plugin
 
 Current Features:
 - Get notified of new track uploads from artists you follow
@@ -15,8 +18,3 @@ Current Features:
 - Listen to your latest incoming tracks and favorite tracks right from the extension
 - Favorite, download, and purchase tracks
 - View track comments and comment on tracks
-
-Upcoming Features:
-- Get notified of new messages
-- Read your messages
-- Reply to messages
