@@ -19,7 +19,7 @@
 var tNew = 0, tNewCount = 0, fNew = 0, autoplay = 0, comments = 0, view = "inc", viewlength = 0, misc = 0, miscNew = 0, miscProper = "", responseCount = 0, responseMax = 0, looping = "off", miscString = "";
 var incData = [[],[],[],[]];
 var favData = [[],[],[],[]];
-var miscData = [[],[],[],[]]
+var miscData = [[],[],[],[]];
 var token, limit, intTimer, buffered, buffTimer, current = 0, linkcount, inc;
 
 // Connect to SoundCloud, setup for latest track fetching
