@@ -78,4 +78,9 @@ function saveOptions() {
 }
 
 // Load options (if available) on page load
-$(function(){loadOptions();});
+$(function(){
+	loadOptions();
+	$("#save").click(function(){
+		saveOptions();
+	});
+});

@@ -20,7 +20,7 @@ var tNew = 0, tNewCount = 0, fNew = 0, autoplay = 0, comments = 0, view = "inc",
 var incData = [[],[],[],[]];
 var favData = [[],[],[],[]];
 var miscData = [[],[],[],[]];
-var token, limit, intTimer, buffered, buffTimer, current = 0, linkcount, inc;
+var token, limit, intTimer, buffered, buffTimer, current = 0, linkcount, inc, views;
 
 // Connect to SoundCloud, setup for latest track fetching
 function initialize(fetch, inToken, inLimit, inInterval) {
@@ -71,7 +71,7 @@ function pushData(array, op, a, b, c, d){
 function crunchCollection(incoming, type, notify, more) {
 	$.each(incoming, function () {
 		var track = this.origin;
-		if (track.title !== undefined && track.streamable) {
+		if (track.title !== undefined) {
 			var op = "push";
 			var trackString = formatTrack(track.title, track.user.permalink, track.user.username, track.waveform_url,
 								track.permalink_url, track.artwork_url, track.download_url,
@@ -124,7 +124,8 @@ function crunchIncoming(incoming, type, notify, more) {
 							}
 						}
 						if(responseCount == responseMax - 1){
-							chrome.extension.sendRequest({requestlist: "readymoreartists"});
+							views = chrome.extension.getViews({type: "popup"});
+							if (views[0]) { chrome.extension.sendRequest({requestlist: "readymoreartists"}); }
 						}
 						responseCount++;
 					});	
@@ -132,6 +133,40 @@ function crunchIncoming(incoming, type, notify, more) {
 			}
 		}
 	}
+	
+	/*
+	$.each(incoming, function () {
+		if (this.title !== undefined && this.streamable) {
+			var op = "push";
+			var trackString = formatTrack(this.title, this.user.permalink, this.user.username, this.waveform_url,
+								this.permalink_url, this.artwork_url, this.download_url,
+								this.purchase_url, this.genre, this.commentable);
+			if(type === "fav"){
+				if ($.inArray(trackString,favData[0]) < 0 && $.inArray(this.id,favData[3]) < 0) {
+					if (notify === 1) {
+						fNew++;
+						op = "unshift";
+					}
+					pushData(favData, op, trackString, this.stream_url, this.user_favorite, this.id);
+				}
+			}
+			else{
+				if ($.inArray(trackString,miscData[0]) < 0 && $.inArray(this.id,miscData[3]) < 0) {
+					var stream = this.stream_url;
+					if (notify === 1) {
+						miscNew++;
+						op = "unshift";
+					}
+					SC.get("/me/favorites/" + this.id, function (incoming, error) {
+						if(error){ pushData(miscData, op, trackString, stream, 0, this.id); }
+						else{ pushData(miscData, op, trackString, stream, 1, this.id); }
+						if (more === 1) { chrome.extension.sendRequest({requestlist: "readymoreartists"}); }
+					});	
+				}
+			}
+		}
+	});
+	*/
 }
 
 // Fetch latest tracks from SoundCloud and notify user of new tracks
@@ -155,33 +190,124 @@ function fetchTracks(stream, type, notify, more) {
 					current = inBounds((parseInt(current) + parseInt(tNew)), viewlength);
 				}
 				tNew = 0;
-				chrome.extension.sendRequest({requestlist: "new"});
+				views = chrome.extension.getViews({type: "popup"});
+				if (views[0]) { chrome.extension.sendRequest({requestlist: "new"}); }
 			}
 			if (notify === 0 && more !== 1) {
 				viewlength = incData[0].length;
 				trackPlayback(0, view);
 			}
-			if (more === 1) { chrome.extension.sendRequest({requestlist: "readymoreinc"}); }
+			if (more === 1) { 
+				views = chrome.extension.getViews({type: "popup"});
+				if (views[0]) { chrome.extension.sendRequest({requestlist: "readymoreinc"}); }
+			}
 		}
 		else if(type === "fav"){
 			if (view === "fav") { viewlength = favData[0].length; }
 			if (fNew > 0) {
 				if (view === "fav") { current = inBounds((parseInt(current, 10) + parseInt(fNew, 10)), viewlength); }
 				fNew = 0;
-				chrome.extension.sendRequest({requestlist: "new"});
+				views = chrome.extension.getViews({type: "popup"});
+				if (views[0]) { chrome.extension.sendRequest({requestlist: "new"}); }
 			}
-			if (more === 1) { chrome.extension.sendRequest({requestlist: "readymorefav"}); }
+			if (more === 1) { 
+				views = chrome.extension.getViews({type: "popup"});
+				if (views[0]) { chrome.extension.sendRequest({requestlist: "readymorefav"}); }
+			}
 		}
 		else {
 			if (view !== "fav" && view !== "inc") { viewlength = misData[0].length; }
 			if (miscNew > 0) {
 				if (view !== "fav" && view !== "inc") { current = inBounds((parseInt(current, 10) + parseInt(miscNew, 10)), viewlength); }
 				miscNew = 0;
-				chrome.extension.sendRequest({requestlist: "new"});
+				views = chrome.extension.getViews({type: "popup"});
+				if (views[0]) { chrome.extension.sendRequest({requestlist: "new"}); }
 			}
 			
 		}
 	});
+	
+	// Old code - reference material if I've broken something
+	/*if (notify === null) { notify = 1; }
+	if (more !== 1) {
+		SC.get("/me/activities/tracks/affiliated?limit=" + limit, function (activities) {
+			$.each(activities.collection, function () {
+				var track = this.origin;
+				if (track.title !== undefined && track.streamable) {
+					var trackString = formatTrack(track.title, track.user.permalink, track.user.username, track.waveform_url,
+										track.permalink_url, track.artwork_url, track.download_url,
+										track.purchase_url, track.genre, track.commentable);
+					if ($.inArray(trackString,incData[0]) < 0 && $.inArray(track.id,incData[3]) < 0) {
+						if (notify === 0) {
+							incData[0].push(trackString);
+							incData[1].push(track.stream_url);
+							incData[2].push(track.user_favorite);
+							incData[3].push(track.id);
+						}
+						else {
+							tNew++;
+							incData[0].unshift(trackString);
+							incData[1].unshift(track.stream_url);
+							incData[2].unshift(track.user_favorite);
+							incData[3].unshift(track.id);
+						}
+					}
+				}
+			});
+			if (tNew > 0) {
+				tNewCount = tNewCount + tNew;
+				chrome.browserAction.setBadgeText({text: tNewCount + ""});
+				if (view === "inc") {
+					viewlength = incData[0].length;
+					current = inBounds((parseInt(current) + parseInt(tNew)), viewlength);
+				}
+				tNew = 0;
+				chrome.extension.sendRequest({requestlist: "new"});
+			}
+			if (notify === 0) {
+				viewlength = incData[0].length;
+				trackPlayback(0, view);
+			}
+		});
+	}
+	if (more === 1) { extrafav++; offset = extrafav * limit + fIn; }
+	else { offset = 0; }
+	SC.get("/me/favorites?order=favorited_at&limit=" + limit + "&offset=" + offset, function (activities) {
+		$.each(activities, function () {
+			if (this.title !== undefined && this.streamable) {
+				var trackString = formatTrack(this.title, this.user.permalink, this.user.username, this.waveform_url,
+									this.permalink_url, this.artwork_url, this.download_url,
+									this.purchase_url, this.genre, this.commentable);
+				if ($.inArray(trackString,favData[0]) < 0 && $.inArray(this.id,favData[3]) < 0) {
+					if (notify === 0) {
+						favData[0].push(trackString);
+						favData[1].push(this.stream_url);
+						favData[2].push(this.user_favorite);
+						favData[3].push(this.id);
+					}
+					else {
+						fNew++;
+						fIn++;
+						favData[0].unshift(trackString);
+						favData[1].unshift(this.stream_url);
+						favData[2].unshift(this.user_favorite);
+						favData[3].unshift(this.id);
+					}
+				}
+			}
+		});
+		if (view === "fav") {
+			viewlength = favData[0].length;
+		}
+		if (fNew > 0) {
+			if (view === "fav") {
+				current = inBounds((parseInt(current, 10) + parseInt(fNew, 10)), viewlength);
+			}
+			fNew = 0;
+			chrome.extension.sendRequest({requestlist: "new"});
+		}
+		if (more === 1) { chrome.extension.sendRequest({requestlist: "readymorefavs"}); }
+	});*/
 }
 
 //  Timed update of track listings
@@ -249,17 +375,19 @@ function tShift(sendState) {
 			dMin = Math.floor(Math.floor($("#playing")[0].duration) / 60), dSec = Math.floor($("#playing")[0].duration) % 60;
 		if (tSec < 10) { tSec = "0" + tSec; }
 		if (dSec < 10) { dSec = "0" + dSec; }
-		chrome.extension.sendRequest({requestlist: "buffer," + Math.round(buffered) + "," + Math.round(cWidth) + "," + tMin + "." + tSec + " / " + dMin + "." + dSec});
+		views = chrome.extension.getViews({type: "popup"});
+		if (views[0]) { chrome.extension.sendRequest({requestlist: "buffer," + Math.round(buffered) + "," + Math.round(cWidth) + "," + tMin + "." + tSec + " / " + dMin + "." + dSec}); }
 	}
 	if ($("#playing")[0].paused && buffered !== 426) {
 		buffTimer = setTimeout(tShift ,500);
 	}
 	if (sendState === 1) {
+		views = chrome.extension.getViews({type: "popup"});
 		if ($("#playing")[0].paused) {
-			chrome.extension.sendRequest({requestlist: "playstate,play"});
+			if (views[0]) { chrome.extension.sendRequest({requestlist: "playstate,play"}); }
 		}
 		else {
-			chrome.extension.sendRequest({requestlist: "playstate,pause"});
+			if (views[0]) { chrome.extension.sendRequest({requestlist: "playstate,pause"}); }
 		}
 	}
 }
@@ -280,7 +408,8 @@ function endPlayback(track) {
 	}
 	if (localStorage.autoplay === "1" && track < viewlength) {
 		current = inBounds(parseInt(track, 10), viewlength);
-		chrome.extension.sendRequest({requestlist: "next," + current});
+		views = chrome.extension.getViews({type: "popup"});
+		if (views[0]) { chrome.extension.sendRequest({requestlist: "next," + current}); }
 		trackPlayback(current, view, 1);
 	}
 }

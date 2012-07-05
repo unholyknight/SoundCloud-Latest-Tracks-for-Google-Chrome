@@ -1,8 +1,9 @@
 {
+	"manifest_version": 2,
 	"name": "SoundCloud Latest Tracks for Google Chrome™",
-	"version": "2.75",
+	"version": "2.76",
 	"description": "Listen to your latest incoming tracks and get notified of new track uploads right from your browser!",
-	"background_page": "background.html",
+	"background": { "page": "background.html" },
 	"options_page": "options.html",
 	"icons": { 
 		"16": "icon16.png",
@@ -11,7 +12,7 @@
 	},
 	"browser_action": {
 		"default_icon": "icon16.png",
-		"popup": "popup.html"
+		"default_popup": "popup.html"
 	},
 	"permissions": [
 		"http://www.soundcloud.com/"
